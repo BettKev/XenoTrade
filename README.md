@@ -43,6 +43,16 @@ The platform consists of:
    npm run dev
    ```
 
+### Environment Setup
+1. Copy the example environment file:
+   ```bash
+   cp client/.env.example client/.env
+   ```
+
+2. Update the environment variables in `client/.env` with your actual API keys.
+
+> **Important**: Never commit `.env` files containing real API keys. Only commit `.env.example` with placeholder values.
+
 ### Building for Production
 To build the client for production:
 ```bash
@@ -54,6 +64,44 @@ Run ESLint to check for code quality:
 ```bash
 npm run lint
 ```
+
+## Git Push Issues
+
+If you encounter a blocked push, follow these steps:
+
+1. **Fetch Latest Changes**
+   ```bash
+   git fetch origin
+   ```
+
+2. **Check for Conflicts**
+   ```bash
+   git status
+   ```
+
+3. **Resolve Push Rejection**
+   - If remote has new changes:
+     ```bash
+     git pull --rebase origin main
+     ```
+   - If local branch is behind:
+     ```bash
+     git pull origin main
+     git push origin main
+     ```
+
+4. **Force Push (use with caution)**
+   ```bash
+   git push -f origin main  # Only use when absolutely necessary
+   ```
+
+5. **Common Issues**
+   - Ensure you have write permissions to the repository
+   - Check if your branch is protected
+   - Verify your git credentials are correct
+   - Make sure you haven't exceeded repository size limits
+
+Remember to always pull changes before pushing to avoid conflicts.
 
 ## Roadmap
 1. **Phase 1**: MVP Development (Frontend, Backend, AI Models, Blockchain Integration)

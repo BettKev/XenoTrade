@@ -46,3 +46,16 @@ client/dist-ssr
 client/coverage
 client/.env*
 client/*.local
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+client/.env
+client/.env.*
+!client/.env.example
+
+# Sensitive files
+*.key
+*.pem
+*.cert
