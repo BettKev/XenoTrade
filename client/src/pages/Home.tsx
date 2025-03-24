@@ -43,6 +43,21 @@ const features = [
   }
 ];
 
+const styles = `
+  @keyframes ticker {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .animate-ticker {
+    animation: ticker 30s linear infinite;
+  }
+`;
+
 const Home: React.FC = () => {
   const { openLoginModal } = useLogin();
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -70,22 +85,22 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-white">
+      <style>{styles}</style>
       {/* Market Ticker */}
       <div className="bg-[#131722] border-b border-gray-800">
-        <div className="container mx-auto py-2 px-4 overflow-x-auto">
+        <div className="container mx-auto py-2 px-4 overflow-hidden">
           {loading ? (
             <div className="flex justify-center py-2">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
             </div>
           ) : (
-            <div className="flex space-x-8">
-              {stocks.map((stock, index) => (
+            <div className="flex whitespace-nowrap animate-ticker">
+              {[...stocks, ...stocks].map((stock, index) => (
                 <motion.div
-                  key={stock.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="flex items-center space-x-2 whitespace-nowrap"
+                  key={`${stock.id}-${index}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center space-x-2 mx-4"
                 >
                   <span className="font-semibold">{stock.id}</span>
                   <span>{stock.price.toFixed(2)}</span>
