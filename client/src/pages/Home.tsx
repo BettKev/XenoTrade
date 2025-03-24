@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLogin } from '../contexts/LoginContext';
 import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
 
-const marketStats = [
-  { symbol: "BTC/USD", price: "36,789.20", change: "+2.4%" },
-  { symbol: "ETH/USD", price: "2,891.15", change: "+1.8%" },
-  { symbol: "XRP/USD", price: "0.5891", change: "-0.7%" },
-];
+interface Stock {
+  id: string;
+  name: string;
+  price: number;
+  change: number;
+  volume: number;
+}
+
+interface MarketStat {
+  id: string;
+  name: string;
+  value: number;
+  change: number;
+  changePercent: number;
+}
 
 const features = [
   {
@@ -34,23 +45,57 @@ const features = [
 
 const Home: React.FC = () => {
   const { openLoginModal } = useLogin();
+  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [marketStats, setMarketStats] = useState<MarketStat[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [stocksRes, statsRes] = await Promise.all([
+          axios.get('http://localhost:3001/stocks'),
+          axios.get('http://localhost:3001/market_stats')
+        ]);
+        setStocks(stocksRes.data);
+        setMarketStats(statsRes.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-white">
       {/* Market Ticker */}
       <div className="bg-[#131722] border-b border-gray-800">
         <div className="container mx-auto py-2 px-4 overflow-x-auto">
-          <div className="flex space-x-8">
-            {marketStats.map((stat, index) => (
-              <div key={index} className="flex items-center space-x-2 whitespace-nowrap">
-                <span className="font-semibold">{stat.symbol}</span>
-                <span>{stat.price}</span>
-                <span className={stat.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}>
-                  {stat.change}
-                </span>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center py-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <div className="flex space-x-8">
+              {stocks.map((stock, index) => (
+                <motion.div
+                  key={stock.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="flex items-center space-x-2 whitespace-nowrap"
+                >
+                  <span className="font-semibold">{stock.id}</span>
+                  <span>{stock.price.toFixed(2)}</span>
+                  <span className={stock.change >= 0 ? 'text-green-400' : 'text-red-400'}>
+                    {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -71,14 +116,75 @@ const Home: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* Market Preview Section */}
+      {/* Market Stats Section */}
       <section className="container mx-auto px-6 py-12 bg-[#131722] rounded-lg mx-4">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold">Live Market Overview</h2>
-          <div className="mt-6 h-[200px] bg-[#1e222d] rounded-lg flex items-center justify-center">
-            <span className="text-gray-500">Trading chart preview</span>
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
-        </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Market Statistics</h2>
+              <div className="space-y-4">
+                {marketStats.map((stat, index) => (
+                  <motion.div
+                    key={stat.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="bg-[#1e222d] p-4 rounded-lg"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">{stat.name}</span>
+                      <div className="text-right">
+                        <div className="font-semibold">{stat.value.toFixed(2)}</div>
+                        <div className={stat.change >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          {stat.change >= 0 ? '+' : ''}{stat.change.toFixed(2)} ({stat.changePercent.toFixed(2)}%)
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Active Stocks</h2>
+              <div className="space-y-4">
+                {stocks.map((stock, index) => (
+                  <motion.div
+                    key={stock.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="bg-[#1e222d] p-4 rounded-lg"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-semibold">{stock.name}</div>
+                        <div className="text-gray-400">{stock.id}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold">{stock.price.toFixed(2)}</div>
+                        <div className={stock.change >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm text-gray-400">
+                      Volume: {stock.volume.toLocaleString()}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* Features Grid */}
