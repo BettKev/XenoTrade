@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLogin } from '../contexts/LoginContext';
 import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon } from '@heroicons/react/24/outline';
@@ -57,16 +57,60 @@ const styles = `
   .animate-ticker {
     animation: ticker 30s linear infinite;
   }
+
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: linear-gradient(to right, #3b82f6, #9333ea);
+    margin-left: 4px;
+    animation: blink 1s infinite;
+  }
 `;
+
+const POLLING_INTERVAL = 5000; // 5 seconds
+const WS_URL = 'ws://localhost:3001/ws';
 
 const Home: React.FC = () => {
   const { openLoginModal } = useLogin();
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [marketStats, setMarketStats] = useState<MarketStat[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const updateData = useCallback(async () => {
+    try {
+      const [stocksRes, statsRes] = await Promise.all([
+        axios.get('http://localhost:3001/stocks'),
+        axios.get('http://localhost:3001/market_stats')
+      ]);
+      
+      setStocks(prevStocks => {
+        return stocksRes.data.map((newStock: Stock) => ({
+          ...newStock,
+          change: newStock.price - (prevStocks.find(s => s.id === newStock.id)?.price || newStock.price)
+        }));
+      });
+      
+      setMarketStats(prevStats => {
+        return statsRes.data.map((newStat: MarketStat) => ({
+          ...newStat,
+          change: newStat.value - (prevStats.find(s => s.id === newStat.id)?.value || newStat.value)
+        }));
+      });
+    } catch (error) {
+      console.error('Error fetching updates:', error);
+    }
+  }, []);
 
+  // Initial data load
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
         const [stocksRes, statsRes] = await Promise.all([
           axios.get('http://localhost:3001/stocks'),
@@ -75,14 +119,48 @@ const Home: React.FC = () => {
         setStocks(stocksRes.data);
         setMarketStats(statsRes.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching initial data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchInitialData();
   }, []);
+
+  // WebSocket connection
+  useEffect(() => {
+    const ws = new WebSocket(WS_URL);
+
+    ws.onopen = () => {
+      console.log('WebSocket Connected');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'stocks') {
+        setStocks(data.data);
+      } else if (data.type === 'market_stats') {
+        setMarketStats(data.data);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    // Fallback polling if WebSocket fails
+    const pollInterval = setInterval(() => {
+      if (ws.readyState !== WebSocket.OPEN) {
+        updateData();
+      }
+    }, POLLING_INTERVAL);
+
+    return () => {
+      ws.close();
+      clearInterval(pollInterval);
+    };
+  }, [updateData]);
 
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-white">
@@ -141,9 +219,10 @@ const Home: React.FC = () => {
                 wrapper="span"
                 speed={50}
                 repeat={Infinity}
-                cursor={true}
+                cursor={false}
                 style={{ display: 'inline-block' }}
               />
+              <span className="typing-cursor"></span>
             </span>
           </h1>
           <p className="text-xl text-gray-400 mb-8 max-w-3xl mx-auto">
