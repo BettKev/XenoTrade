@@ -24,6 +24,9 @@ export const getAIResponse = async (message: string): Promise<string> => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
+      if (response.status === 429) {
+        throw new Error('API quota exceeded. Please try again later or contact support for upgraded access.');
+      }
       throw new Error(`API error: ${response.status} ${errorData?.error?.message || response.statusText}`);
     }
 
@@ -36,6 +39,9 @@ export const getAIResponse = async (message: string): Promise<string> => {
     return data.choices[0].message.content;
   } catch (error) {
     console.error('OpenAI API Error:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to get AI response');
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to get AI response');
   }
 };
