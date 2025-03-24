@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { XMarkIcon, PaperAirplaneIcon, CommandLineIcon } from '@heroicons/react/24/outline';
-import { getAIResponse } from '../services/openai';
+import { getAIResponse } from '../services/gemini';
 
 interface Message {
   type: 'user' | 'assistant';
