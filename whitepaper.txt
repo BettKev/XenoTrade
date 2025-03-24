@@ -17,7 +17,7 @@ This platform will enable users to trade tokenized NSE-listed assets using Heder
 ```
 +----------------------------+
 |      User Interface        |
-|   (Next.js PWA)            |
+|   (React Vite PWA)         |
 +----------------------------+
             │
             ▼
