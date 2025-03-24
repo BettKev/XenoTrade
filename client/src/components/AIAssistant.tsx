@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { XMarkIcon, PaperAirplaneIcon, CommandLineIcon } from '@heroicons/react/24/outline';
+import { getAIResponse } from '../services/openai';
 
 interface Message {
   type: 'user' | 'assistant';
@@ -46,12 +47,8 @@ const AIAssistant: React.FC<{
     setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
     setIsLoading(true);
 
-    // TODO: Replace with actual AI service call
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const response = `I understand you're asking about "${userMessage}". As this is a demo, I can only provide basic responses. In the full version, I'll be able to help with trading questions, market analysis, and platform guidance.`;
-      
+      const response = await getAIResponse(userMessage);
       setMessages(prev => [...prev, { type: 'assistant', content: response }]);
     } catch (error) {
       setMessages(prev => [...prev, { 
@@ -71,41 +68,41 @@ const AIAssistant: React.FC<{
     <>
       {showWelcomeBubble && !isVisible && (
         <div 
-          className="fixed bottom-24 right-4 max-w-xs animate-fade-in cursor-pointer" 
+          className="fixed bottom-16 right-2 md:bottom-24 md:right-4 max-w-[280px] md:max-w-xs animate-fade-in cursor-pointer" 
           onClick={() => {
             setShowWelcomeBubble(false);
-            onClose(); // This should toggle the chat visibility in parent
+            onClose();
           }}
         >
-          <div className="bg-blue-600 text-white p-4 rounded-lg shadow-lg flex items-center gap-2">
-            <CommandLineIcon className="w-6 h-6" />
-            <p>Need help with trading? Click here to chat with me!</p>
+          <div className="bg-blue-600 text-white p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2">
+            <CommandLineIcon className="w-5 h-5 md:w-6 md:h-6" />
+            <p className="text-sm md:text-base">Need help with trading? Click here to chat with me!</p>
           </div>
-          <div className="w-4 h-4 bg-blue-600 transform rotate-45 translate-x-[300px] translate-y-[-8px]" />
+          <div className="w-4 h-4 bg-blue-600 transform rotate-45 translate-x-[260px] md:translate-x-[300px] translate-y-[-8px]" />
         </div>
       )}
       {isVisible && (
-        <div className="fixed bottom-24 right-4 w-96 h-[600px] bg-[#1e222d] rounded-lg shadow-xl flex flex-col border border-gray-800">
+        <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-4 w-full md:w-96 h-full md:h-[600px] bg-[#1e222d] md:rounded-lg shadow-xl flex flex-col border border-gray-800">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-800">
+          <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-800">
             <div className="flex items-center gap-2">
-              <CommandLineIcon className="w-6 h-6 text-blue-500" />
-              <h3 className="text-lg font-semibold text-white">AI Assistant</h3>
+              <CommandLineIcon className="w-5 h-5 md:w-6 md:h-6 text-blue-500" />
+              <h3 className="text-base md:text-lg font-semibold text-white">AI Assistant</h3>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
-              <XMarkIcon className="w-6 h-6" />
+            <button onClick={onClose} className="text-gray-400 hover:text-white p-1">
+              <XMarkIcon className="w-5 h-5 md:w-6 md:h-6" />
             </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                  className={`max-w-[85%] md:max-w-[80%] rounded-lg p-2.5 md:p-3 text-sm md:text-base ${
                     message.type === 'user'
                       ? 'bg-blue-600 text-white'
                       : 'bg-[#131722] text-gray-200'
@@ -130,21 +127,21 @@ const AIAssistant: React.FC<{
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="p-4 border-t border-gray-800">
+          <form onSubmit={handleSubmit} className="p-3 md:p-4 border-t border-gray-800">
             <div className="flex space-x-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 bg-[#131722] text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 bg-[#131722] text-white text-sm md:text-base rounded-lg px-3 py-2 md:px-4 md:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"
                 disabled={isLoading}
-                className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="bg-blue-600 text-white p-1.5 md:p-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                <PaperAirplaneIcon className="w-5 h-5" />
+                <PaperAirplaneIcon className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
           </form>
