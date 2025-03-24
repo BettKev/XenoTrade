@@ -26,11 +26,11 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose, onSig
   };
 
   return (
-    <div className="fixed inset-0 bg-opacity-0 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-6xl w-full m-4">
-        <div className="grid md:grid-cols-2 items-center gap-10">
-          <div>
-            <h2 className="lg:text-5xl text-3xl font-bold lg:leading-[57px] text-slate-900">
+    <div className="fixed inset-0 bg-opacity-0 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl p-4 sm:p-8 max-w-6xl w-full my-4 sm:my-8">
+        <div className="grid md:grid-cols-2 items-start gap-6 md:gap-10">
+          <div className="hidden md:block">
+            <h2 className="lg:text-4xl text-2xl font-bold lg:leading-[48px] text-slate-900">
               Join XenoTrade Today
             </h2>
             <p className="text-sm mt-6 text-slate-500 leading-relaxed">
@@ -44,7 +44,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose, onSig
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="max-w-md md:ml-auto w-full">
+          <form onSubmit={handleSubmit} className="max-w-md w-full mx-auto md:ml-auto">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-slate-900 lg:text-3xl text-2xl font-bold">Sign up</h3>
               <button 
@@ -130,6 +130,15 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose, onSig
               </button>
             </div>
           </form>
+
+          <div className="block md:hidden text-center mt-8">
+            <p className="text-sm text-slate-500">
+              Already have an account?
+              <button onClick={switchToLogin} className="text-blue-600 font-medium hover:underline ml-1">
+                Sign in here
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>
