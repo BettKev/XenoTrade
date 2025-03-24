@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLogin } from '../contexts/LoginContext';
 
 interface Feature {
   title: string;
@@ -26,6 +27,8 @@ const features: Feature[] = [
 ];
 
 const Home: React.FC = () => {
+  const { openLoginModal } = useLogin();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
       {/* Hero Section */}
@@ -71,7 +74,7 @@ const Home: React.FC = () => {
           whileTap={{ scale: 0.95 }}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full 
                     transition-colors duration-300 shadow-lg"
-          onClick={() => alert('Get Started!')}
+          onClick={openLoginModal}
         >
           Start Trading Now
         </motion.button>
