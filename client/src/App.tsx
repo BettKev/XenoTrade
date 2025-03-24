@@ -1,25 +1,14 @@
-import './App.css'
-import { useEffect } from 'react';
+import './App.css';
+import Layout from './components/Layout';
 
 function App() {
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').then(
-        (registration) => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        },
-        (error) => {
-          console.error('Service Worker registration failed:', error);
-        }
-      );
-    }
-  }, []);
-
   return (
-    <>
-      <p>XenoTrade</p>
-    </>
-  )
+    <Layout>
+      <div className="text-center p-4">
+        <p className="text-xl font-bold text-gray-800">Welcome to XenoTrade</p>
+      </div>
+    </Layout>
+  );
 }
 
-export default App
+export default App;
