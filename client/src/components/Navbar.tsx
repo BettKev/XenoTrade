@@ -81,6 +81,16 @@ const Navbar: React.FC = () => {
                 >
                   About
                 </Link>
+                <Link
+                  to="/roadmap"
+                  className={`rounded-md px-3 py-2 text-sm font-medium ${
+                    isActive('/roadmap') 
+                      ? 'bg-gray-900 text-white' 
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`}
+                >
+                  Roadmap
+                </Link>
               </div>
             </div>
           </div>
@@ -201,6 +211,16 @@ const Navbar: React.FC = () => {
             }`}
           >
             About
+          </Link>
+          <Link
+            to="/roadmap"
+            className={`block rounded-md px-3 py-2 text-base font-medium ${
+              isActive('/roadmap') 
+                ? 'bg-gray-900 text-white' 
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            Roadmap
           </Link>
         </div>
       </div>
