@@ -79,29 +79,30 @@ If you encounter a blocked push, follow these steps:
    git status
    ```
 
-3. **Resolve Push Rejection**
-   - If remote has new changes:
-     ```bash
-     git pull --rebase origin main
-     ```
-   - If local branch is behind:
-     ```bash
-     git pull origin main
-     git push origin main
-     ```
-
-4. **Force Push (use with caution)**
+3. **Force Push Options**
    ```bash
-   git push -f origin main  # Only use when absolutely necessary
+   git push --force origin main          # Complete force push (use with extreme caution)
+   git push --force-with-lease origin main   # Safer force push that checks for remote changes
    ```
 
-5. **Common Issues**
-   - Ensure you have write permissions to the repository
-   - Check if your branch is protected
-   - Verify your git credentials are correct
-   - Make sure you haven't exceeded repository size limits
+   ⚠️ **Warning**: Force pushing rewrites history and can cause data loss:
+   - Only use when absolutely necessary
+   - Inform team members before force pushing
+   - Never force push to shared branches without team consensus
+   - Consider using `--force-with-lease` as a safer alternative
 
-Remember to always pull changes before pushing to avoid conflicts.
+4. **When to Force Push**
+   - After rebasing your local branch
+   - When cleaning up commits before merging
+   - Fixing commits with sensitive data
+   - Updating PR branches
+
+5. **After Force Push**
+   - Notify team members to run:
+     ```bash
+     git fetch origin
+     git reset --hard origin/main
+     ```
 
 ## Roadmap
 1. **Phase 1**: MVP Development (Frontend, Backend, AI Models, Blockchain Integration)
