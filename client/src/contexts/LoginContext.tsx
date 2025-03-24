@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { LoginContextType } from '../types/LoginTypes';
 
 const LoginContext = createContext<LoginContextType | undefined>(undefined);
@@ -21,18 +21,33 @@ export const LoginProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   
   const closeSignupModal = () => setIsSignupModalOpen(false);
 
-  return (
-    <LoginContext.Provider value={{ 
-      isLoginModalOpen, 
-      openLoginModal, 
-      closeLoginModal,
-      isSignupModalOpen,
-      openSignupModal,
-      closeSignupModal
-    }}>
-      {children}
-    </LoginContext.Provider>
-  );
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.error('LoginContext Error:', error.error);
+      // You can add additional error handling here
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  try {
+    return (
+      <LoginContext.Provider value={{ 
+        isLoginModalOpen, 
+        openLoginModal, 
+        closeLoginModal,
+        isSignupModalOpen,
+        openSignupModal,
+        closeSignupModal
+      }}>
+        {children}
+      </LoginContext.Provider>
+    );
+  } catch (error) {
+    console.error('LoginProvider render error:', error);
+    return null; // Fallback UI
+  }
 };
 
 export const useLogin = () => {
