@@ -1,14 +1,13 @@
 import './App.css';
 import Layout from './components/Layout';
+import Home from './pages/Home';
 
-function App() {
+const App: React.FC = () => {
   return (
     <Layout>
-      <div className="text-center p-4">
-        <p className="text-xl font-bold text-gray-800">Welcome to XenoTrade</p>
-      </div>
+      <Home />
     </Layout>
   );
-}
+};
 
 export default App;
