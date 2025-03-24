@@ -21,6 +21,9 @@ const AIAssistant: React.FC<{
   const [isLoading, setIsLoading] = useState(false);
   const [showWelcomeBubble, setShowWelcomeBubble] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef<{ startX: number; startY: number; }>({ startX: 0, startY: 0 });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,6 +40,39 @@ const AIAssistant: React.FC<{
     }, 500);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (window.innerWidth < 768) return; // Disable dragging on mobile
+    setIsDragging(true);
+    dragRef.current = {
+      startX: e.pageX - position.x,
+      startY: e.pageY - position.y
+    };
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    const newX = Math.min(Math.max(0, e.pageX - dragRef.current.startX), window.innerWidth - 384);
+    const newY = Math.min(Math.max(0, e.pageY - dragRef.current.startY), window.innerHeight - 600);
+    
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +105,9 @@ const AIAssistant: React.FC<{
       {showWelcomeBubble && !isVisible && (
         <div 
           className="fixed bottom-16 right-2 md:bottom-24 md:right-4 max-w-[280px] md:max-w-xs animate-fade-in cursor-pointer" 
+          style={{
+            transform: `translate(${position.x}px, ${position.y}px)`,
+          }}
           onClick={() => {
             setShowWelcomeBubble(false);
             onClose();
@@ -82,9 +121,18 @@ const AIAssistant: React.FC<{
         </div>
       )}
       {isVisible && (
-        <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-4 w-full md:w-96 h-full md:h-[600px] bg-[#1e222d] md:rounded-lg shadow-xl flex flex-col border border-gray-800">
+        <div 
+          className="fixed inset-0 md:inset-auto md:bottom-24 md:right-4 w-full md:w-96 h-full md:h-[600px] bg-[#1e222d] md:rounded-lg shadow-xl flex flex-col border border-gray-800"
+          style={{
+            transform: window.innerWidth >= 768 ? `translate(${position.x}px, ${position.y}px)` : 'none',
+            cursor: isDragging ? 'grabbing' : 'grab'
+          }}
+        >
           {/* Header */}
-          <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-800">
+          <div 
+            className="flex items-center justify-between p-3 md:p-4 border-b border-gray-800"
+            onMouseDown={handleMouseDown}
+          >
             <div className="flex items-center gap-2">
               <CommandLineIcon className="w-5 h-5 md:w-6 md:h-6 text-blue-500" />
               <h3 className="text-base md:text-lg font-semibold text-white">AI Assistant</h3>
