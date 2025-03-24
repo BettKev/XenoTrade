@@ -22,10 +22,20 @@ export const getAIResponse = async (message: string): Promise<string> => {
       })
     });
 
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(`API error: ${response.status} ${errorData?.error?.message || response.statusText}`);
+    }
+
     const data = await response.json();
+    
+    if (!data?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from OpenAI API');
+    }
+
     return data.choices[0].message.content;
   } catch (error) {
     console.error('OpenAI API Error:', error);
-    throw new Error('Failed to get AI response');
+    throw new Error(error instanceof Error ? error.message : 'Failed to get AI response');
   }
 };
