@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLogin } from '../contexts/LoginContext';
-import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { TypeAnimation } from 'react-type-animation';
+import AIAssistant from '../components/AIAssistant';
 
 interface Stock {
   id: string;
@@ -82,6 +83,9 @@ const Home: React.FC = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [marketStats, setMarketStats] = useState<MarketStat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  
   
   const updateData = useCallback(async () => {
     try {
@@ -201,7 +205,7 @@ const Home: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <h1 className="text-5xl font-bold mb-6">
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 px-2">
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
               <TypeAnimation
                 sequence={[
@@ -220,7 +224,14 @@ const Home: React.FC = () => {
                 speed={50}
                 repeat={Infinity}
                 cursor={false}
-                style={{ display: 'inline-block' }}
+                style={{ 
+                  display: 'inline-block',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word'
+                }}
               />
               <span className="typing-cursor"></span>
             </span>
@@ -334,6 +345,22 @@ const Home: React.FC = () => {
           Start Trading Now
         </motion.button>
       </section>
+
+      {/* AI Assistant Button & Component */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowAIAssistant(!showAIAssistant)}
+          className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+        >
+          <ChatBubbleLeftRightIcon className="w-6 h-6" />
+        </motion.button>
+      </div>
+      {showAIAssistant && <AIAssistant 
+  isVisible={showChat} 
+  onClose={() => setShowChat(!showChat)} 
+/>}
     </div>
   );
 };
