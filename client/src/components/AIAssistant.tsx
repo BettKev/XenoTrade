@@ -34,7 +34,7 @@ const AIAssistant: React.FC<{
     // Show welcome bubble after 2 seconds
     const timer = setTimeout(() => {
       setShowWelcomeBubble(true);
-    }, 2000);
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
