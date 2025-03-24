@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLogin } from '../contexts/LoginContext';
 import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { TypeAnimation } from 'react-type-animation';
 
 interface Stock {
   id: string;
@@ -122,8 +123,28 @@ const Home: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-            Trade Smarter with XenoTrade
+          <h1 className="text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+              <TypeAnimation
+                sequence={[
+                  'Trade Smarter with XenoTrade',
+                  2000,
+                  'Experience Next-Gen Trading',
+                  2000,
+                  'Unlock Financial Freedom',
+                  2000,
+                  'Navigate Markets with Confidence',
+                  2000,
+                  'Your Success, Our Priority',
+                  2000,
+                ]}
+                wrapper="span"
+                speed={50}
+                repeat={Infinity}
+                cursor={true}
+                style={{ display: 'inline-block' }}
+              />
+            </span>
           </h1>
           <p className="text-xl text-gray-400 mb-8 max-w-3xl mx-auto">
             Experience professional-grade trading with advanced charts, real-time data, and institutional-level execution speed.
