@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Navbar: React.FC = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <nav className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -11,13 +18,14 @@ const Navbar: React.FC = () => {
               type="button"
               className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
               aria-controls="mobile-menu"
-              aria-expanded="false"
+              aria-expanded={isMobileMenuOpen}
+              onClick={toggleMobileMenu}
             >
               <span className="absolute -inset-0.5"></span>
               <span className="sr-only">Open main menu</span>
               {/* Icon when menu is closed */}
               <svg
-                className="block size-6"
+                className={`${isMobileMenuOpen ? 'hidden' : 'block'} size-6`}
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
@@ -28,7 +36,7 @@ const Navbar: React.FC = () => {
               </svg>
               {/* Icon when menu is open */}
               <svg
-                className="hidden size-6"
+                className={`${isMobileMenuOpen ? 'block' : 'hidden'} size-6`}
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
@@ -102,7 +110,11 @@ const Navbar: React.FC = () => {
             </button>
 
             {/* Profile dropdown */}
-            <div className="relative ml-3">
+            <div 
+              className="relative ml-3"
+              onMouseEnter={() => setIsProfileMenuOpen(true)}
+              onMouseLeave={() => setIsProfileMenuOpen(false)}
+            >
               <div>
                 <button
                   type="button"
@@ -123,7 +135,9 @@ const Navbar: React.FC = () => {
 
               {/* Dropdown menu */}
               <div
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 focus:outline-none"
+                className={`${
+                  isProfileMenuOpen ? 'transform opacity-100 scale-100' : 'transform opacity-0 scale-95 pointer-events-none'
+                } absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 focus:outline-none transition-all duration-200 ease-in-out`}
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="user-menu-button"
@@ -163,7 +177,12 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile menu */}
-      <div className="sm:hidden" id="mobile-menu">
+      <div 
+        className={`${
+          isMobileMenuOpen ? 'transform opacity-100 scale-100' : 'transform opacity-0 scale-95 pointer-events-none h-0'
+        } sm:hidden transition-all duration-200 ease-in-out`} 
+        id="mobile-menu"
+      >
         <div className="space-y-1 px-2 pt-2 pb-3">
           <a
             href="#"
