@@ -91,8 +91,8 @@ const Home: React.FC = () => {
   const updateData = useCallback(async () => {
     try {
       const [stocksRes, statsRes] = await Promise.all([
-        axios.get(`${BACKEND_API_URL}/stocks`),
-        axios.get(`${BACKEND_API_URL}/market_stats`)
+        axios.get(`${BACKEND_API_URL}stocks`),
+        axios.get(`${BACKEND_API_URL}market_stats`)
       ]);
       
       setStocks(prevStocks => {
@@ -118,8 +118,8 @@ const Home: React.FC = () => {
     const fetchInitialData = async () => {
       try {
         const [stocksRes, statsRes] = await Promise.all([
-          axios.get(`${BACKEND_API_URL}/stocks`),
-          axios.get(`${BACKEND_API_URL}/market_stats`)
+          axios.get(`${BACKEND_API_URL}stocks`),
+          axios.get(`${BACKEND_API_URL}market_stats`)
         ]);
         setStocks(stocksRes.data);
         setMarketStats(statsRes.data);

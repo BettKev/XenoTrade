@@ -1,16 +1,39 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import BACKEND_API_URL from '../config';
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const isActive = (path: string) => location.pathname === path;
+
+  // # Frontend logout function (for calling the logout API)
+async function logout() {
+    try {
+        const response = await fetch(`${BACKEND_API_URL}logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        if (response.ok) {
+            localStorage.removeItem("access_token");
+            console.log("Logout successful");
+            navigate("/");
+        } else {
+            console.error("Logout failed");
+        }
+    } catch (error) {
+        console.error("Error during logout:", error);
+    }
+}
 
   return (
     <nav className="bg-gray-800 sticky top-0 z-50">
@@ -170,13 +193,17 @@ const Navbar: React.FC = () => {
                   Settings
                 </a>
                 <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  tabIndex={-1}
-                  id="user-menu-item-2"
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabIndex={-1}
+                    id="user-menu-item-2"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        logout();
+                    }}
                 >
-                  Sign out
+                    Sign out
                 </a>
               </div>
             </div>

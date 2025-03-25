@@ -83,3 +83,9 @@ async def fetch_users():
         return {"users": user_list}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# User logout route
+@router.post("/logout/")
+async def logout_user():
+    return {"message": "Logout successful. Please discard your token on the client-side."}
