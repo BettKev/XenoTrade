@@ -10,10 +10,9 @@ router = APIRouter()
 @router.post("/register/")
 async def register_user(user: UserCreate):
     query = users.insert().values(
-        username=user.username,
         email=user.email,
         full_name=user.full_name,
-        disabled=user.disabled,
+        password=user.password,
     )
     try:
         last_record_id = await database.execute(query)

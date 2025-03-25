@@ -9,10 +9,9 @@ users = sqlalchemy.Table(
     "users",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("username", sqlalchemy.String(32)),
     sqlalchemy.Column("email", sqlalchemy.String(128)),
     sqlalchemy.Column("full_name", sqlalchemy.String(256), nullable=True),
-    sqlalchemy.Column("disabled", sqlalchemy.Boolean, default=False),
+    sqlalchemy.Column("password", sqlalchemy.String(256)),  # Add password column
 )
 
 engine = sqlalchemy.create_engine(
