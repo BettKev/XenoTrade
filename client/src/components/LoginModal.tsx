@@ -4,6 +4,8 @@ import BACKEND_API_URL from '../config';
 
 interface LoginResponse {
   message: string;
+  access_token: string;
+  token_type: string;
   user: {
     id: number;
     email: string;
@@ -48,6 +50,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
 
       const data: LoginResponse = await response.json();
       console.log('Login successful:', data);
+      localStorage.setItem('access_token', data.access_token);
       onLogin(data.user.email, password);
       onClose();
     } catch (err) {
