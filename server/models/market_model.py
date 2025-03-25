@@ -18,6 +18,10 @@ class StockResponse(StockBase):
 
 class MarketBase(BaseModel):
     name: str
+    symbol: str
+    last_price: float
+    change_percent: float
+    volume: int
 
 class MarketCreate(MarketBase):
     pass
