@@ -5,6 +5,7 @@ import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon, ChatBubbl
 import axios from 'axios';
 import { TypeAnimation } from 'react-type-animation';
 import AIAssistant from '../components/AIAssistant';
+import { BACKEND_API_URL } from '../config';
 
 interface Stock {
   id: string;
@@ -76,7 +77,7 @@ const styles = `
 `;
 
 const POLLING_INTERVAL = 5000; // 5 seconds
-const WS_URL = 'ws://localhost:3001/ws';
+const WS_URL = 'ws://127.0.0.1:8000/ws';
 
 const Home: React.FC = () => {
   const { openLoginModal } = useLogin();
@@ -90,8 +91,8 @@ const Home: React.FC = () => {
   const updateData = useCallback(async () => {
     try {
       const [stocksRes, statsRes] = await Promise.all([
-        axios.get('http://localhost:3001/stocks'),
-        axios.get('http://localhost:3001/market_stats')
+        axios.get(`${BACKEND_API_URL}/stocks`),
+        axios.get(`${BACKEND_API_URL}/market_stats`)
       ]);
       
       setStocks(prevStocks => {
@@ -117,8 +118,8 @@ const Home: React.FC = () => {
     const fetchInitialData = async () => {
       try {
         const [stocksRes, statsRes] = await Promise.all([
-          axios.get('http://localhost:3001/stocks'),
-          axios.get('http://localhost:3001/market_stats')
+          axios.get(`${BACKEND_API_URL}/stocks`),
+          axios.get(`${BACKEND_API_URL}/market_stats`)
         ]);
         setStocks(stocksRes.data);
         setMarketStats(statsRes.data);

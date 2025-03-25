@@ -4,10 +4,9 @@ import { useLogin } from '../contexts/LoginContext';
 interface SignupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSignup: (email: string, password: string, name: string) => void;
 }
 
-export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose, onSignup }) => {
+export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -15,9 +14,32 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose, onSig
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSignup(email, password, name);
+    try {
+      const response = await fetch('http://127.0.0.1:8000/register/', { // Replace with your API endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          full_name: name,
+          password: password,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Signup successful!');
+        onClose(); // Close the modal after successful signup
+      } else {
+        console.error('Signup failed:', response.statusText);
+        // Handle signup failure (e.g., display an error message)
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      // Handle network errors or other exceptions
+    }
   };
 
   const switchToLogin = () => {
