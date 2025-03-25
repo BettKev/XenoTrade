@@ -1,14 +1,34 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from pydantic import BaseModel
-from ..models.user_model import User
-from app import app
+from models.user_model import UserCreate
+from app.database import database, users  # Import the database and users table
+from sqlalchemy import select
+
+router = APIRouter()
 
 # User registration route
-@app.post("/register/")
-async def register_user(user: User):
-    # In a real application, you would save the user to a database here.
-    # For this example, we'll just return the user data.
-    # You should also add proper error handling and validation.
-    if user.id == 1:
-        raise HTTPException(status_code=400, detail="User with this ID already exists")
-    return user
+@router.post("/register/")
+async def register_user(user: UserCreate):
+    query = users.insert().values(
+        username=user.username,
+        email=user.email,
+        full_name=user.full_name,
+        disabled=user.disabled,
+    )
+    try:
+        last_record_id = await database.execute(query)
+        return {"id": last_record_id, **user.dict()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+#Fetch users route
+@router.get("/users/")
+async def fetch_users():
+    query = select(users)
+    try:
+        user_records = await database.fetch_all(query)
+        # Convert each record to a dictionary
+        user_list = [dict(user) for user in user_records]
+        return {"users": user_list}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
