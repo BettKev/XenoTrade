@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLogin } from '../contexts/LoginContext';
 import  BACKEND_API_URL  from '../config';
+import axios from 'axios';
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -18,19 +19,13 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${BACKEND_API_URL}register/`, { // Replace with your API endpoint
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          full_name: name,
-          password: password,
-        }),
+      const response = await axios.post(`${BACKEND_API_URL}register/`, {
+        email,
+        full_name: name,
+        password,
       });
-
-      if (response.ok) {
+  
+      if (response.status === 200) {
         alert('Signup successful!');
         onClose(); // Close the modal after successful signup
       } else {
@@ -38,10 +33,14 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => 
         // Handle signup failure (e.g., display an error message)
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      // Handle network errors or other exceptions
+      if (axios.isAxiosError(error)) {
+        console.error('Signup error:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     }
   };
+  
 
   const switchToLogin = () => {
     onClose();
