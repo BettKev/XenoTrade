@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
 import { useLogin } from '../contexts/LoginContext';
+import BACKEND_API_URL from '../config';
+
+interface LoginResponse {
+  message: string;
+  access_token: string;
+  token_type: string;
+  user: {
+    id: number;
+    email: string;
+  };
+}
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -8,15 +19,44 @@ interface LoginModalProps {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { openSignupModal } = useLogin();
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(username, password);  
+    setError('');
+    console.log(`Login attempted with email: ${email}`);
+
+    try {
+      const response = await fetch(`${BACKEND_API_URL}login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      console.log(`Login response status: ${response.status}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Login failed:', errorData);
+        throw new Error(errorData.detail || 'Login failed');
+      }
+
+      const data: LoginResponse = await response.json();
+      console.log('Login successful:', data);
+      localStorage.setItem('access_token', data.access_token);
+      onLogin(data.user.email, password);
+      onClose();
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    }
   };
 
   const switchToSignup = () => {
@@ -58,13 +98,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
               </button>
             </div>
 
+            {error && (
+              <div className="mb-4 text-red-500 text-sm">
+                {error}
+              </div>
+            )}
+
             <div className="space-y-6">
               <div>
                 <label className="text-sm text-slate-800 font-medium mb-2 block">Email</label>
                 <input
                   type="email"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="bg-slate-100 w-full text-sm text-slate-800 px-4 py-3 rounded-md outline-none border focus:border-blue-600 focus:bg-transparent"
                   placeholder="Enter Email"
                   required
