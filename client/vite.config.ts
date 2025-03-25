@@ -6,11 +6,13 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    host: 'localhost',
+    host: true, // Use `true` to bind to all network interfaces, avoids localhost issues
     port: 5173,
+    strictPort: true, // Prevents Vite from switching to another port
     hmr: {
-      clientPort: 5173,
-      protocol: 'ws'
+      clientPort: 5173, // Explicit WebSocket port
+      protocol: 'ws',
+      host: 'localhost' // Explicitly set the WebSocket host
     }
   }
 })

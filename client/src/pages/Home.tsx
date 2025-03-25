@@ -5,7 +5,7 @@ import { ChartBarIcon, ShieldCheckIcon, CurrencyDollarIcon, ClockIcon, ChatBubbl
 import axios from 'axios';
 import { TypeAnimation } from 'react-type-animation';
 import AIAssistant from '../components/AIAssistant';
-import { BACKEND_API_URL } from '../config';
+import BACKEND_API_URL from '../config';
 
 interface Stock {
   id: string;

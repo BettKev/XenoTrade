@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLogin } from '../contexts/LoginContext';
+import  BACKEND_API_URL  from '../config';
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -17,7 +18,7 @@ export const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:8000/register/', { // Replace with your API endpoint
+      const response = await fetch(`${BACKEND_API_URL}register/`, { // Replace with your API endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
