@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLogin } from '../contexts/LoginContext';
 import BACKEND_API_URL from '../config';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginResponse {
   message: string;
@@ -23,13 +24,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { openSignupModal } = useLogin();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    console.log(`Login attempted with email: ${email}`);
+    // console.log(`Login attempted with email: ${email}`);
 
     try {
       const response = await fetch(`${BACKEND_API_URL}login`, {
@@ -49,10 +51,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
       }
 
       const data: LoginResponse = await response.json();
-      console.log('Login successful:', data);
+      // console.log('Login successful:', data);
       localStorage.setItem('access_token', data.access_token);
       onLogin(data.user.email, password);
       onClose();
+       // Navigate to dashboard
+       navigate('/dashboard');
     } catch (err) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Roadmap from './pages/Roadmap';
 import { LoginProvider } from './contexts/LoginContext';
+import Dashboard from './pages/Dashboard';
 
 const App: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/roadmap" element={<Roadmap />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </Layout>
       </BrowserRouter>

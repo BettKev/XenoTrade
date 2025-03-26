@@ -1,5 +1,6 @@
 from databases import Database
 import sqlalchemy
+from datetime import datetime
 
 DATABASE_URL = "sqlite:///./xeno.db"  # SQLite database URL
 
@@ -13,6 +14,31 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("full_name", sqlalchemy.String(256), nullable=True),
     sqlalchemy.Column("password", sqlalchemy.String(256)),  # Add password column
 )
+
+# Stock table
+stocks = sqlalchemy.Table(
+    "stocks",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("symbol", sqlalchemy.String(10), unique=True, nullable=False),
+    sqlalchemy.Column("name", sqlalchemy.String(256), nullable=False),
+    sqlalchemy.Column("price", sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column("market_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("markets.id"))
+)
+
+# Market table
+markets = sqlalchemy.Table(
+    "markets",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("name", sqlalchemy.String(256), unique=True, nullable=False),
+    sqlalchemy.Column("symbol", sqlalchemy.String(10), unique=True, nullable=False),
+    sqlalchemy.Column("last_price", sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column("change_percent", sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column("volume", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("updated_at", sqlalchemy.DateTime, nullable=False, default=datetime.utcnow),
+)
+
 
 engine = sqlalchemy.create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}  # Required for SQLite

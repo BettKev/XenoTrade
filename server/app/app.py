@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import database
-from routes import user_route  # Import the user routes
+from routes import user_route, market_route  # Import the user routes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -28,4 +28,5 @@ async def shutdown():
 async def root():
     return {"message": "This is XenoTrade Server"}
 
-app.include_router(user_route.router)  # Include the user routes
+app.include_router(user_route.router)
+app.include_router(market_route.router)

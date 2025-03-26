@@ -7,20 +7,22 @@ import { TypeAnimation } from 'react-type-animation';
 import AIAssistant from '../components/AIAssistant';
 import BACKEND_API_URL from '../config';
 
-interface Stock {
-  id: string;
+
+interface MarketResponse {
+  id: number;
   name: string;
-  price: number;
-  change: number;
+  symbol: string;
+  last_price: number;
+  change_percent: number;
   volume: number;
 }
 
-interface MarketStat {
-  id: string;
+interface StockResponse {
+  id: number;
+  symbol: string;
   name: string;
-  value: number;
-  change: number;
-  changePercent: number;
+  price: number;
+  market_id: number;
 }
 
 const features = [
@@ -81,8 +83,8 @@ const WS_URL = 'ws://127.0.0.1:8000/ws';
 
 const Home: React.FC = () => {
   const { openLoginModal } = useLogin();
-  const [stocks, setStocks] = useState<Stock[]>([]);
-  const [marketStats, setMarketStats] = useState<MarketStat[]>([]);
+  const [stocks, setStocks] = useState<StockResponse[]>([]);
+  const [marketStats, setMarketStats] = useState<MarketResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -91,21 +93,21 @@ const Home: React.FC = () => {
   const updateData = useCallback(async () => {
     try {
       const [stocksRes, statsRes] = await Promise.all([
-        axios.get(`${BACKEND_API_URL}/stocks`),
-        axios.get(`${BACKEND_API_URL}/market_stats`)
+        axios.get(`${BACKEND_API_URL}stocks`),
+        axios.get(`${BACKEND_API_URL}market_stats`)
       ]);
       
       setStocks(prevStocks => {
-        return stocksRes.data.map((newStock: Stock) => ({
+        return stocksRes.data.map((newStock: StockResponse) => ({
           ...newStock,
           change: newStock.price - (prevStocks.find(s => s.id === newStock.id)?.price || newStock.price)
         }));
       });
       
       setMarketStats(prevStats => {
-        return statsRes.data.map((newStat: MarketStat) => ({
+        return statsRes.data.map((newStat: MarketResponse) => ({
           ...newStat,
-          change: newStat.value - (prevStats.find(s => s.id === newStat.id)?.value || newStat.value)
+          change: newStat.change_percent - (prevStats.find(s => s.id === newStat.id)?.change_percent || newStat.change_percent)
         }));
       });
     } catch (error) {
@@ -118,9 +120,10 @@ const Home: React.FC = () => {
     const fetchInitialData = async () => {
       try {
         const [stocksRes, statsRes] = await Promise.all([
-          axios.get(`${BACKEND_API_URL}/stocks`),
-          axios.get(`${BACKEND_API_URL}/market_stats`)
+          axios.get(`${BACKEND_API_URL}stocks`),
+          axios.get(`${BACKEND_API_URL}market_stats`)
         ]);
+        console.log("Stocks:", stocksRes.data)
         setStocks(stocksRes.data);
         setMarketStats(statsRes.data);
       } catch (error) {
@@ -132,6 +135,8 @@ const Home: React.FC = () => {
 
     fetchInitialData();
   }, []);
+
+  
 
   // WebSocket connection
   useEffect(() => {
@@ -187,9 +192,9 @@ const Home: React.FC = () => {
                   className="flex items-center space-x-2 mx-4"
                 >
                   <span className="font-semibold">{stock.id}</span>
-                  <span>{stock.price.toFixed(2)}</span>
-                  <span className={stock.change >= 0 ? 'text-green-400' : 'text-red-400'}>
-                    {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                  <span>{stock.price?.toFixed(2)?? "N/A"}</span>
+                  <span className={stock.price >= 0 ? 'text-green-400' : 'text-red-400'}>
+                    {stock.price >= 0 ? '+' : ''}{stock.price?.toFixed(2)?? "N/A"}
                   </span>
                 </motion.div>
               ))}
@@ -270,9 +275,9 @@ const Home: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">{stat.name}</span>
                       <div className="text-right">
-                        <div className="font-semibold">{stat.value.toFixed(2)}</div>
-                        <div className={stat.change >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {stat.change >= 0 ? '+' : ''}{stat.change.toFixed(2)} ({stat.changePercent.toFixed(2)}%)
+                        <div className="font-semibold">{stat.volume?.toFixed(2)?? "N/A"}</div>
+                        <div className={stat.change_percent >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          {stat.change_percent >= 0 ? '+' : ''}{stat.last_price?.toFixed(2)?? "N/A"} ({stat.change_percent?.toFixed(2)?? "N/A"}%)
                         </div>
                       </div>
                     </div>
@@ -297,14 +302,14 @@ const Home: React.FC = () => {
                         <div className="text-gray-400">{stock.id}</div>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">{stock.price.toFixed(2)}</div>
-                        <div className={stock.change >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                        <div className="font-semibold">{stock.price?.toFixed(2)?? "N/A"}</div>
+                        <div className={stock.price >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          {stock.price >= 0 ? '+' : ''}{stock.price?.toFixed(2)?? "N/A"}
                         </div>
                       </div>
                     </div>
                     <div className="mt-2 text-sm text-gray-400">
-                      Volume: {stock.volume.toLocaleString()}
+                      Volume: {stock.price.toLocaleString()}
                     </div>
                   </motion.div>
                 ))}
