@@ -191,8 +191,9 @@ const Home: React.FC = () => {
                   animate={{ opacity: 1 }}
                   className="flex items-center space-x-2 mx-4"
                 >
-                  <span className="font-semibold">{stock.id}</span>
-                  <span>{stock.price?.toFixed(2)?? "N/A"}</span>
+                  <span className="font-semibold">{stock.symbol}</span>
+                  {/* Commented out for future use */}
+                  {/* <span>{stock.price?.toFixed(2)?? "N/A"}</span> */}
                   <span className={stock.price >= 0 ? 'text-green-400' : 'text-red-400'}>
                     {stock.price >= 0 ? '+' : ''}{stock.price?.toFixed(2)?? "N/A"}
                   </span>
