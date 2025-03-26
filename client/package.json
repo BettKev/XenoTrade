@@ -12,9 +12,12 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
+    "@hashgraph/hethers": "^1.2.6",
+    "@hashgraph/sdk": "^2.61.0",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.0.15",
     "axios": "^1.8.4",
+    "ethers": "^6.13.5",
     "framer-motion": "^12.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
