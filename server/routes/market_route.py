@@ -51,18 +51,23 @@ async def create_market_stats(markets_list: List[MarketCreate]):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Route to create a stock
-@router.post("/stocks", response_model=StockResponse)
-async def create_stock(stock: StockCreate):
-    query = insert(stocks).values(
+@router.post("/stocks", response_model=List[StockResponse])
+async def create_stock(stocks_list: List[StockCreate]):
+    try:
+        query = insert(stocks).returning(*stocks.c)
+        new_stocks = []
+
+        async with database.transaction():
+            for stock in stocks_list:
+                result = await database.fetch_one(query.values(
         name=stock.name,
         symbol=stock.symbol,
         price=stock.price,
         market_id=stock.market_id,  # Ensure this foreign key exists in the market table
-        created_at=datetime.utcnow()
-    ).returning(*stocks.c)
-
-    try:
-        new_stock = await database.fetch_one(query)
-        return StockResponse(**dict(new_stock))
+        # created_at=datetime.utcnow()
+    ))
+                new_stocks.append(StockResponse(**dict(result)))
+ 
+        return new_stocks
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
