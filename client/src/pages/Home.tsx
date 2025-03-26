@@ -8,7 +8,7 @@ import AIAssistant from '../components/AIAssistant';
 import BACKEND_API_URL from '../config';
 
 interface Stock {
-  id: string;
+  id: number;
   name: string;
   price: number;
   change: number;
@@ -16,7 +16,7 @@ interface Stock {
 }
 
 interface MarketStat {
-  id: string;
+  id: number;
   name: string;
   value: number;
   change: number;
@@ -187,9 +187,9 @@ const Home: React.FC = () => {
                   className="flex items-center space-x-2 mx-4"
                 >
                   <span className="font-semibold">{stock.id}</span>
-                  <span>{stock.price.toFixed(2)}</span>
+                  <span>{stock.p?.toFixed(2)?? "N/A"}</span>
                   <span className={stock.change >= 0 ? 'text-green-400' : 'text-red-400'}>
-                    {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                    {stock.change >= 0 ? '+' : ''}{stock.change?.toFixed(2)?? "N/A"}
                   </span>
                 </motion.div>
               ))}
@@ -270,9 +270,9 @@ const Home: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">{stat.name}</span>
                       <div className="text-right">
-                        <div className="font-semibold">{stat.value.toFixed(2)}</div>
+                        <div className="font-semibold">{stat.value?.toFixed(2)?? "N/A"}</div>
                         <div className={stat.change >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {stat.change >= 0 ? '+' : ''}{stat.change.toFixed(2)} ({stat.changePercent.toFixed(2)}%)
+                          {stat.change >= 0 ? '+' : ''}{stat.change?.toFixed(2)?? "N/A"} ({stat.changePercent?.toFixed(2)?? "N/A"}%)
                         </div>
                       </div>
                     </div>
@@ -297,9 +297,9 @@ const Home: React.FC = () => {
                         <div className="text-gray-400">{stock.id}</div>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">{stock.price.toFixed(2)}</div>
+                        <div className="font-semibold">{stock.price?.toFixed(2)?? "N/A"}</div>
                         <div className={stock.change >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                          {stock.change >= 0 ? '+' : ''}{stock.change?.toFixed(2)?? "N/A"}
                         </div>
                       </div>
                     </div>
