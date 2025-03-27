@@ -19,7 +19,9 @@ const Dashboard: React.FC = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:relative w-64 bg-white shadow-md p-4 flex flex-col transition-transform transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        className={`fixed lg:relative w-64 bg-white shadow-md p-4 flex flex-col transition-transform transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
       >
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h2>
         <nav className="flex flex-col gap-4">
@@ -42,14 +44,21 @@ const Dashboard: React.FC = () => {
                   <li key={account} className="text-gray-700 break-all">{account}</li>
                 ))}
               </ul>
+
+              {/* Balances Section */}
               <h3 className="mt-4 text-lg font-semibold">Balances:</h3>
-              <ul className="list-disc list-inside">
-                {Object.entries(balances).map(([symbol, balance]) => (
-                  <li key={symbol} className="text-gray-700">
-                    {symbol}: <span className="font-semibold">{balance}</span>
-                  </li>
-                ))}
-              </ul>
+              {balances && Object.keys(balances).length > 0 ? (
+                <ul className="list-disc list-inside">
+                  {Object.entries(balances).map(([symbol, balance]) => (
+                    <li key={symbol} className="text-gray-700">
+                      {symbol}: <span className="font-semibold">{balance}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-600">No balances available.</p>
+              )}
+
               <button
                 className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg w-full"
                 onClick={disconnect}
