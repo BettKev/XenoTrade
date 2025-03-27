@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { FiHome, FiSettings, FiLogOut, FiMenu, FiX } from "react-icons/fi";
+import { FiHome, FiSettings, FiMenu, FiX } from "react-icons/fi";
 import useMetaMask from "../components/WalletConnect";
 import TradeForm from "../components/TradeOrderForm";
-// import TradeChart from "../components/TradeChart";
 
 const Dashboard: React.FC = () => {
-  const { isConnected, accounts, balances, network, connect, disconnect, error } = useMetaMask();
+  const { isConnected, accounts, balances, connect, disconnect, error } = useMetaMask();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -34,7 +33,7 @@ const Dashboard: React.FC = () => {
 
         {/* Wallet Connect Section */}
         <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2 text-black      ">Wallet Connection</h3>
+          <h3 className="text-lg font-semibold mb-2 text-black">Wallet Connection</h3>
           {isConnected ? (
             <div>
               <p className="text-green-600">Connected:</p>
@@ -43,9 +42,6 @@ const Dashboard: React.FC = () => {
                   <li key={account} className="text-gray-700 break-all">{account}</li>
                 ))}
               </ul>
-              <p className="mt-2 text-gray-700">
-                Network: <span className="font-semibold">{network ?? "Loading..."}</span>
-              </p>
               <h3 className="mt-4 text-lg font-semibold">Balances:</h3>
               <ul className="list-disc list-inside">
                 {Object.entries(balances).map(([symbol, balance]) => (
@@ -74,16 +70,11 @@ const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
-
-        <button className="flex items-center gap-2 p-2 text-red-600 hover:bg-red-100 rounded-lg mt-auto">
-          <FiLogOut /> Logout
-        </button>
       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col p-6">
-        {/* <TradeChart /> */}
-        <TradeForm onSubmit={()=>alert("Trade placed.")}/>
+        <TradeForm onSubmit={() => alert("Trade placed.")} />
       </div>
     </div>
   );

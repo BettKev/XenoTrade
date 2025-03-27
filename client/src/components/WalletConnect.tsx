@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserProvider, formatEther, Contract } from "ethers"; // Correct imports
+import { BrowserProvider } from "ethers";
 
 declare global {
   interface Window {
@@ -7,28 +7,11 @@ declare global {
   }
 }
 
-// List of supported networks and their tokens
+// Supported Hedera networks
 const SUPPORTED_NETWORKS: Record<number, { name: string; symbol: string }> = {
-  1: { name: "Ethereum", symbol: "ETH" },
-  56: { name: "BSC", symbol: "BNB" },
-  137: { name: "Polygon", symbol: "MATIC" },
   295: { name: "Hedera Mainnet", symbol: "HBAR" },
   296: { name: "Hedera Testnet", symbol: "HBAR" },
 };
-
-// ERC-20 token contracts for different networks
-const ERC20_TOKENS: { [key: number]: { symbol: string; address: string; decimals: number }[] } = {
-  1: [{ symbol: "USDT", address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", decimals: 6 }],
-  56: [{ symbol: "USDT", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 }],
-  137: [{ symbol: "USDT", address: "0xE0b22E0037B130A9F56bBb537684E6fA18192341", decimals: 6 }],
-  295: [], // Placeholder for Hedera tokens
-  296: [], // Placeholder for Hedera tokens
-};
-
-const ERC20_ABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)",
-];
 
 const useMetaMask = () => {
   const [accounts, setAccounts] = useState<string[]>([]);
@@ -66,31 +49,19 @@ const useMetaMask = () => {
       const { chainId } = await provider.getNetwork();
       const chainIdNum = Number(chainId);
 
-      const networkInfo = SUPPORTED_NETWORKS[chainIdNum] || { name: "Unknown", symbol: "?" };
-      setNetwork(networkInfo.name);
+      if (!(chainIdNum in SUPPORTED_NETWORKS)) {
+        setError(new Error("Unsupported network. Please switch to Hedera Testnet or Mainnet."));
+        return;
+      }
+
+      setNetwork(SUPPORTED_NETWORKS[chainIdNum].name);
 
       let newBalances: { [key: string]: string } = {};
-      
-      if (chainIdNum === 295 || chainIdNum === 296) {
-        // Hedera balance fetching using Mirror Node API
-        const response = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${account}`);
-        const data = await response.json();
-        newBalances["HBAR"] = (parseFloat(data.balance.balance) / 1e8).toFixed(4); // HBAR balance
-      } else {
-        // Fetch native token balance
-        const balanceWei = await provider.getBalance(account);
-        const balanceNative = parseFloat(formatEther(balanceWei)).toFixed(4);
-        newBalances[networkInfo.symbol] = balanceNative;
 
-        // Fetch ERC-20 token balances
-        if (ERC20_TOKENS[chainIdNum]) {
-          for (let token of ERC20_TOKENS[chainIdNum]) {
-            const contract = new Contract(token.address, ERC20_ABI, provider);
-            const balanceRaw = await contract.balanceOf(account);
-            newBalances[token.symbol] = (parseFloat(formatEther(balanceRaw)) * 10 ** (18 - token.decimals)).toFixed(4);
-          }
-        }
-      }
+      // Fetch HBAR balance from Hedera Mirror Node
+      const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${account}`);
+      const data = await response.json();
+      newBalances["HBAR"] = (parseFloat(data.balance.balance) / 1e8).toFixed(4); // Convert Tinybars to HBAR
 
       setBalances(newBalances);
     } catch (err) {
