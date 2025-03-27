@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FiHome, FiSettings, FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import useMetaMask from "../components/WalletConnect";
-import TradeForm from "../components/TradeAsset";
+import TradeForm from "../components/TradeOrderForm";
+// import TradeChart from "../components/TradeChart";
 
 const Dashboard: React.FC = () => {
   const { isConnected, accounts, balances, network, connect, disconnect, error } = useMetaMask();
@@ -81,6 +82,7 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col p-6">
+        {/* <TradeChart /> */}
         <TradeForm onSubmit={()=>alert("Trade placed.")}/>
       </div>
     </div>
